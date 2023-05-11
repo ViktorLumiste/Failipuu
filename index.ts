@@ -11,5 +11,4 @@ function display(path:string):void{
         }
     }
 }
-
 display("./teekond2/neljapaev");
