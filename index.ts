@@ -1,45 +1,33 @@
 // @ts-ignore
 import fs from 'fs';
-function sumDirectoryData(dirname:string):number{
-    let sum: number=0;
-    let dirnames:string[] = fs.readdirSync(dirname);
-
-    for(let dirnam of dirnames){
-
-        let filenames:string[] = fs.readdirSync(dirname+'/'+dirnam);
-
-        for(let filename of filenames){
-            let contents:string=fs.readFileSync(dirname+"/"+dirnam+"/"+filename, "utf-8");
-            sum+=parseInt(contents);
-        }
-    }
-    return sum;
+function minDayData(dirname:string){
+    let values:number[]=fs.readdirSync(dirname).map(filename =>
+        parseInt(fs.readFileSync(dirname+"/"+filename, "utf-8") ));
+    return Math.min(...values);
 }
-function maxDirectoryData(dirname:string){
-    let max: string ='';
-    let max1n: string='';
-    let max1d: number=0;
-    let max2n: string='';
-    let max2d: number=0;
-    let dirnames:string[] = fs.readdirSync(dirname);
-
-    for(let dirnam of dirnames){
-
-        let filenames:string[] = fs.readdirSync(dirname+'/'+dirnam);
-
-        for(let filename of filenames){
-            let contents:string=fs.readFileSync(dirname+"/"+dirnam+"/"+filename, "utf-8");
-            if (dirnam == 'kolmapaev' && parseInt(contents)>max1d){
-                max1d = parseInt(contents)
-                max1n = filename
-            } else if(dirnam == 'neljapaev' && parseInt(contents)>max2d){
-                max2d = parseInt(contents)
-                max2n = filename
-            }
-        }
-    }
-    max = (`${max1n}-${max1d} \n${max2n}-${max2d}`  )
-    return max
+function maxDayData(dirname:string){
+    let values:number[]=fs.readdirSync(dirname).map(filename =>
+        parseInt(fs.readFileSync(dirname+"/"+filename, "utf-8") ));
+    return Math.max(...values);
 }
-console.log(sumDirectoryData("teekond1"));
-console.log(maxDirectoryData("teekond1"));
+function diffDayData(dirname:string){
+    let diff:number= maxDayData(dirname) - minDayData(dirname)
+    return diff;
+}
+
+function minDaysData(startdir:string){
+    let daynames:string[]=fs.readdirSync(startdir);
+    let values:number[]=daynames.map(dayname => minDayData(startdir+dayname));
+    return Math.min(...values);
+}
+function maxDaysData(startdir:string){
+    let daynames:string[]=fs.readdirSync(startdir);
+    let values:number[]=daynames.map(dayname => maxDayData(startdir+dayname));
+    return Math.max(...values);
+}
+
+console.log(diffDayData("teekond1/neljapaev/"));
+console.log(minDayData("teekond1/neljapaev/"));
+console.log(maxDayData("teekond1/neljapaev/"));
+console.log(minDaysData("teekond1/"));
+console.log(maxDaysData("teekond1/"));
