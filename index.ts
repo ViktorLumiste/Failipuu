@@ -1,58 +1,52 @@
 // @ts-ignore
 import fs from 'fs';
 
-function distanceSum(path:string):number{
+function distancesLess(path:string, criteria: number):string[]{
     if(fs.lstatSync(path).isDirectory()){
-        let sum: number=0;
+        let result:string[]=[];
         for(let subpath of fs.readdirSync(path)){
-            sum+=distanceSum(path+"/"+subpath);
+            let values=distancesLess(path+"/"+subpath, criteria);
+            for(let value of values){
+                result.push(value);
+            }
         }
-        return sum;
+        return result;
     }
-    return parseInt(fs.readFileSync(path, "utf-8"));
+    let amount=parseInt(fs.readFileSync(path, "utf-8"));
+    return amount<criteria?[path]:[];
 }
+function distancesMore(path:string, criteria: number) :string[]{
+        if(fs.lstatSync(path).isDirectory()){
+            let result:string[]=[];
+            for(let subpath of fs.readdirSync(path)){
+                let values=distancesMore(path+"/"+subpath, criteria);
+                for(let value of values){
+                    result.push(value);
+                }
+            }
+            return result;
+        }
+        let amount=parseInt(fs.readFileSync(path, "utf-8"));
+        return amount>criteria?[path]:[];
+}
+function distancesLessAndMore(lessThan:number, moreThan:number, path:string) :number {
+    let i;
+    let count = 0
+    const less = distancesLess(path, lessThan)
+    const more = distancesMore(path, moreThan)
 
-function carDistance(path:string, number:string){
-    let sum: number=0;
-    if(fs.lstatSync(path).isDirectory()){
-        for(let subpath of fs.readdirSync(path)){
-            if (subpath == number){
-                sum+=parseInt(fs.readFileSync(path+"/"+subpath, "utf-8"))
-            }
+    for (i = 0; i < less.length; i++) {
+        if (less[i] !== undefined) {
+            count++;
         }
-        return sum
-    carDistance(path,number)
-}
-}
-
-function distanceMax(path:string):number{
-    if(fs.lstatSync(path).isDirectory()){
-        let max: number=0;
-        for(let subpath of fs.readdirSync(path)){
-            let value=distanceMax(path+"/"+subpath);
-            if(value>max){
-                if(max==0){max=value;}
-                max=value>max?value:max;
-            }
-        }
-        return max;
     }
-    return parseInt(fs.readFileSync(path, "utf-8"));
-}
-function distanceMaxByNumber(path:string, number:string):number{
-    if(fs.lstatSync(path).isDirectory()){
-        let max: number=0;
-        for(let subpath of fs.readdirSync(path)){
-            let value=distanceMaxByNumber(path+"/"+subpath,number);
-            if(value>max && subpath == number){
-                if(max==0){max=value;}
-                max=value>max?value:max;
-            }
+    for (i = 0; i < more.length; i++) {
+        if (more[i] !== undefined) {
+            count++;
         }
-        return max;
     }
-    return parseInt(fs.readFileSync(path, "utf-8"));
+    console.log(distancesLess(path, lessThan));
+    console.log(distancesMore(path, moreThan));
+    return count
 }
-console.log(distanceSum("./teekond2/neljapaev"));
-console.log(distanceMaxByNumber("./teekond2/neljapaev",'323ABC.txt'));
-console.log(carDistance("./teekond2", '123ABC.txt'));
+console.log(distancesLessAndMore(50,100,"./teekond2"))
